@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/icon-16.png</file>
+        <file>icons/icon-32.png</file>
+        <file>icons/icon-64.png</file>
+        <file>icons/icon-128.png</file>
+        <file>icons/icon-512.png</file>
+        <file>icons/others/close-fill.png</file>
+        <file>icons/others/delete-bin-5-line.png</file>
+        <file>icons/others/error-warning-line.png</file>
+        <file>icons/others/eye-line.png</file>
+        <file>icons/others/file-copy-line.png</file>
+        <file>icons/others/file-text-line.png</file>
+        <file>icons/others/file-unknow-line.png</file>
+        <file>icons/others/folder-open-line.png</file>
+        <file>icons/others/information-line.png</file>
+        <file>icons/others/links-line.png</file>
+        <file>icons/others/link-unlink-m.png</file>
+        <file>icons/others/paypal-line.png</file>
+        <file>icons/others/star-line.png</file>
+        <file>icons/icon-256.png</file>
+    </qresource>
+</RCC>
