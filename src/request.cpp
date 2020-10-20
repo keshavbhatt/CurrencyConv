@@ -11,6 +11,7 @@ Request::Request(QObject *parent) : QObject(parent)
     m_netwManager->setCache(diskCache);
     connect(m_netwManager,&QNetworkAccessManager::finished,[=](QNetworkReply* rep){
         if(rep->error() == QNetworkReply::NoError){
+            operations.removeOne(rep);
             QString repStr = rep->readAll();
             emit requestFinished(repStr);
         }else{
@@ -26,18 +27,18 @@ Request::~Request()
     this->deleteLater();
 }
 
-void Request::clearCache(QString url)
+void Request::clearCache(QUrl url)
 {
-    QNetworkDiskCache* diskCache = new QNetworkDiskCache(this);
-    diskCache->setCacheDirectory(_cache_path);
-    diskCache->remove(QUrl(url));
-    diskCache->deleteLater();
+   m_netwManager->cache()->remove(url);
 }
 
 void Request::cancelAll()
 {
-    foreach (QNetworkReply *rep, this->findChildren<QNetworkReply*>()) {
-        rep->abort();
+    foreach (QNetworkReply *rep,operations) {
+        if(rep!=nullptr){
+            rep->abort();
+            rep->deleteLater();
+        }
     }
 }
 
@@ -48,7 +49,7 @@ void Request::get(const QUrl url)
     request.setAttribute(QNetworkRequest::CacheLoadControlAttribute,
     QNetworkRequest::PreferCache);
     QNetworkReply *reply = m_netwManager->get(request);
-    reply->setParent(this);
+    operations.append(reply);
     connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(downloadProgress(qint64,qint64)));
     emit requestStarted();
 }

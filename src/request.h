@@ -13,7 +13,7 @@ public:
     virtual ~Request();
 public slots:
     void get(const QUrl url);
-    void clearCache(QString url);
+    void clearCache(QUrl url);
     void cancelAll();
 signals:
    void requestFinished(QString rep);
@@ -28,6 +28,7 @@ private slots:
 private:
    QString _cache_path;
    QNetworkAccessManager *m_netwManager = nullptr;
+   QList<QNetworkReply*>operations;
 };
 
 #endif // REQUEST_H
