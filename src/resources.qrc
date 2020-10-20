@@ -19,5 +19,58 @@
         <file>icons/others/paypal-line.png</file>
         <file>icons/others/star-line.png</file>
         <file>icons/icon-256.png</file>
+        <file>icons/others/texture.png</file>
+        <file>icons/others/arrow-left-circle-line.png</file>
+        <file>icons/others/refresh-line.png</file>
+        <file>icons/others/arrow-right-circle-line.png</file>
+        <file>icons/others/download-line.png</file>
+        <file>icons/others/image-2-line.png</file>
+        <file>icons/others/setting-line.png</file>
+        <file>icons/others/map-pin-line.png</file>
+        <file>icons/others/folder-download-line.png</file>
+        <file>icons/others/lock-2-fill.png</file>
+        <file>icons/others/questionnaire-line.png</file>
+        <file>icons/others/volume-up-line.png</file>
+        <file>icons/others/swap-box-line.png</file>
+        <file>icons/others/clipboard-line.png</file>
+        <file>icons/others/archive-drawer-line.png</file>
+        <file>icons/others/translate-2.png</file>
+        <file>icons/others/magic-line.png</file>
+        <file>icons/others/twitter-line.png</file>
+        <file>icons/others/mail-add-line.png</file>
+        <file>icons/others/facebook-box-line.png</file>
+        <file>icons/others/stop-line.png</file>
+        <file>icons/others/loader-2-fill.png</file>
+        <file>icons/others/share-line.png</file>
+        <file>icons/others/play-line.png</file>
+        <file>icons/others/time-line.png</file>
+        <file>icons/others/pause-line.png</file>
+        <file>icons/others/focus-3-line.png</file>
+        <file>icons/others/arrow-right-s-line.png</file>
+        <file>icons/others/arrow-left-s-line.png</file>
+        <file>icons/others/drag-move-fill.png</file>
+        <file>icons/others/volume-mute-line.png</file>
+        <file>icons/others/screenshot-2-line.png</file>
+        <file>icons/others/search-2-line.png</file>
+        <file>icons/others/youtube-line.png</file>
+        <file>icons/others/terminal-box-line.png</file>
+        <file>icons/others/sip-line.png</file>
+        <file>icons/others/shape-2-line.png</file>
+        <file>icons/others/record-circle-line.png</file>
+        <file>icons/others/repeat-2-fill.png</file>
+        <file>icons/others/camera-off-line.png</file>
+        <file>icons/others/information-fill.png</file>
+        <file>icons/others/delete-bin-3-line.png</file>
+        <file>icons/others/movie-2-line.png</file>
+        <file>icons/others/music-2-line.png</file>
+        <file>icons/others/arrow-left-line.png</file>
+        <file>icons/others/arrow-right-line.png</file>
+        <file>icons/others/filter-2-line.png</file>
+        <file>icons/others/arrow-up-s-line.png</file>
+        <file>icons/others/arrow-down-s-line.png</file>
+        <file>icons/others/account-pin-circle-line.png</file>
+        <file>icons/others/shopping-cart-line.png</file>
+        <file>icons/others/picture-in-picture-line.png</file>
+        <file>icons/others/home-8-line.png</file>
     </qresource>
 </RCC>
