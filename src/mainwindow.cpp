@@ -24,15 +24,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     init_request();
 
-    getRates();
+    getRates(false);
 }
 
 void MainWindow::init_appMenu()
 {
     connect(ui->actionAbout_Qt,SIGNAL(triggered(bool)),qApp,SLOT(aboutQt()));
     connect(ui->actionQuit,SIGNAL(triggered(bool)),qApp,SLOT(quit()));
+    connect(ui->actionHistorical_rates,SIGNAL(triggered(bool)),this,SLOT(showHistoricalRate()));
     //TODO implement more
-
 }
 
 void MainWindow::init_request()
@@ -73,14 +73,42 @@ void MainWindow::init_loader()
     }
 }
 
-void MainWindow::getRates()
+void MainWindow::showHistoricalRate()
 {
-    _request->get(QUrl("https://api.exchangerate.host/latest?base=USD&places=2"));
+    if(_calWidget==nullptr){
+        _calWidget= new CalenderWidget(this);
+
+        connect(_calWidget,&CalenderWidget::selectionChanged,[=](const QDate date){
+            historicalDate = date.toString("yyyy-M-dd");
+            _calWidget->close();
+            getRates(true);
+        });
+    }
+    _calWidget->show();
+}
+
+void MainWindow::getRates(bool historical)
+{
+    QUrl base_url("https://api.exchangerate.host/latest");
+    if(historical){
+        base_url = QUrl("https://api.exchangerate.host/"+historicalDate);
+    }
+    QUrlQuery query;
+    query.addQueryItem("base","USD");
+    query.addQueryItem("places","2");
+    base_url.setQuery(query);
+    //delete cached data if not historical
+    if(!historical)
+        _request->clearCache(base_url.toString());
+    _request->get(base_url);
+    qDebug()<<base_url;
     ui->statusBar->showMessage(tr("Loading exchange rates..."));
 }
 
 void MainWindow::setRates(QString reply)
 {
+    QString currentS2Cur = ui->s2ComboBox->currentText();
+
     exchange.clear();
     ui->s1ComboBox->clear();
     ui->s2ComboBox->clear();
@@ -90,7 +118,11 @@ void MainWindow::setRates(QString reply)
         qDebug()<<"API:"<<"Empty response returned from API call. Please report to developer.";
         return;
     }
-    QString dateStr = jsonResponse.object().value("date").toString();
+    QString dateStr = jsonResponse.object().value("date").toString().trimmed();
+    QDate date = QDate::fromString(dateStr,Qt::ISODate);
+    qDebug()<<date<<QDate::currentDate();
+    if(date == QDate::currentDate())
+        dateStr.append(tr(" (Today)"));
     ui->statusBar->showMessage(tr("Exchange rates from ")+dateStr);
     QJsonObject rateObj = jsonResponse.object().value("rates").toObject();
     //popluate exchange
@@ -103,6 +135,9 @@ void MainWindow::setRates(QString reply)
         exchange.insert(key,val.toDouble(0.00));
     }
     ui->s1ComboBox->setCurrentText(settings.value("baseCurr","USD").toString());
+    if(exchange.keys().indexOf(currentS2Cur)!=-1)
+     ui->s2ComboBox->setCurrentText(currentS2Cur);
+
     ui->s1ComboBox->blockSignals(false);
     ui->s2ComboBox->blockSignals(false);
     //init exchange

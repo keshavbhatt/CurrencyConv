@@ -7,10 +7,12 @@
 #include <QAbstractSpinBox>
 #include <QCloseEvent>
 #include <QSettings>
+#include <QCalendarWidget>
 
 #include "waitingspinnerwidget.h"
 #include "request.h"
 #include "error.h"
+#include "calenderwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,7 +34,7 @@ private slots:
 
     void setStyle(QString fname);
 
-    void getRates();
+    void getRates(bool historical);
 
     void init_request();
 
@@ -52,6 +54,8 @@ private slots:
 
     void init_appMenu();
 
+    void showHistoricalRate();
+
 private:
 
     Ui::MainWindow *ui;
@@ -61,6 +65,8 @@ private:
 
     QMap<QString,double> exchange;
     QSettings settings;
+    CalenderWidget *_calWidget = nullptr;
+    QString historicalDate;
 };
 
 #endif // MAINWINDOW_H
