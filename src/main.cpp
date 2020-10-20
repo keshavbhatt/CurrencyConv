@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("org.keshavnrj.ubuntu");
     QCoreApplication::setApplicationVersion("1");
 
-
     MainWindow w;
     w.show();
 
