@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        calenderwidget.cpp \
         error.cpp \
         main.cpp \
         mainwindow.cpp \
@@ -32,12 +33,14 @@ SOURCES += \
         waitingspinnerwidget.cpp
 
 HEADERS += \
+        calenderwidget.h \
         error.h \
         mainwindow.h \
         request.h \
         waitingspinnerwidget.h
 
 FORMS += \
+        calenderwidget.ui \
         error.ui \
         mainwindow.ui
 
