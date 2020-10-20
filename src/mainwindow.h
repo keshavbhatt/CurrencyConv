@@ -8,6 +8,13 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include <QCalendarWidget>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
+#include <QLabel>
+#include <QDesktopWidget>
+#include <QSizeGrip>
+#include <QScreen>
+#include <QDesktopServices>
 
 #include "waitingspinnerwidget.h"
 #include "request.h"
@@ -30,6 +37,7 @@ protected slots:
 
     void closeEvent(QCloseEvent *event);
 
+    bool eventFilter(QObject *obj, QEvent *ev);
 private slots:
 
     void setStyle(QString fname);
@@ -56,6 +64,13 @@ private slots:
 
     void showHistoricalRate();
 
+    void set_style();
+
+    void on_reload_clicked();
+
+    void on_home_clicked();
+
+    void showAbout();
 private:
 
     Ui::MainWindow *ui;
@@ -67,6 +82,7 @@ private:
     QSettings settings;
     CalenderWidget *_calWidget = nullptr;
     QString historicalDate;
+    QUrl _currentUrl,_homeUrl;
 };
 
 #endif // MAINWINDOW_H

@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDesktopWidget>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -9,14 +9,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/icons/icon-256.png"));
     this->setWindowTitle(qApp->applicationName()+" v"+qApp->applicationVersion());
-    setStyle(":/light.qss");
-    setFixedHeight(this->minimumSizeHint().height()+8);
-    setFixedWidth(this->minimumSizeHint().width()+400);
 
-    setGeometry(QStyle::alignedRect(
-                Qt::LeftToRight,Qt::AlignCenter,size(),
-                QApplication::desktop()->availableGeometry()
-                ));
+    int height = minimumSizeHint().height()+8;
+    int width  = minimumSizeHint().width()+300;
+    QSize size(width,height);
+    setMinimumSize(size);
+
+    if(settings.value("geometry").isValid()){
+        restoreGeometry(settings.value("geometry").toByteArray());
+        if(settings.value("windowState").isValid()){
+            restoreState(settings.value("windowState").toByteArray());
+        }else{
+            QScreen* pScreen = QApplication::primaryScreen();// (this->mapToGlobal({this->width()/2,0}));
+            QRect availableScreenSize = pScreen->availableGeometry();
+            this->move(availableScreenSize.center()-this->rect().center());
+        }
+    }else{
+        setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,Qt::AlignCenter,size,
+                    QApplication::desktop()->availableGeometry()
+                    ));
+    }
+
+    ui->s1ComboBox->installEventFilter(this);
+    ui->s2ComboBox->installEventFilter(this);
+
+    set_style();
 
     init_appMenu();
 
@@ -25,6 +43,16 @@ MainWindow::MainWindow(QWidget *parent) :
     init_request();
 
     getRates(false);
+
+}
+
+void MainWindow::set_style()
+{
+    setStyle(":/"+settings.value("theme","light").toString()+".qss");
+    bool light = false;
+    light = settings.value("theme","light").toString()=="light"?true:false;
+    ui->actionDark->setChecked(!light);
+    ui->actionLight->setChecked(light);
 }
 
 void MainWindow::init_appMenu()
@@ -32,7 +60,22 @@ void MainWindow::init_appMenu()
     connect(ui->actionAbout_Qt,SIGNAL(triggered(bool)),qApp,SLOT(aboutQt()));
     connect(ui->actionQuit,SIGNAL(triggered(bool)),qApp,SLOT(quit()));
     connect(ui->actionHistorical_rates,SIGNAL(triggered(bool)),this,SLOT(showHistoricalRate()));
-    //TODO implement more
+    connect(ui->actionDark,&QAction::toggled,[=](bool checked){
+        if (checked){
+            settings.setValue("theme","dark");
+            set_style();
+        }
+    });
+    connect(ui->actionLight,&QAction::toggled,[=](bool checked){
+        if (checked){
+            settings.setValue("theme","light");
+            set_style();
+        }
+    });
+    connect(ui->actionAbout_Application,SIGNAL(triggered(bool)),this,SLOT(showAbout()));
+    connect(ui->actionRate_in_store,&QAction::triggered,[=](){
+        QDesktopServices::openUrl(QUrl("snap://currencyconv"));
+    });
 }
 
 void MainWindow::init_request()
@@ -45,7 +88,11 @@ void MainWindow::init_request()
     connect(_request,&Request::requestFinished,[=](QString reply)
     {
         _loader->stop();
-        setRates(reply);
+        if(reply.isEmpty()){
+            ui->statusBar->showMessage(tr("Empty response returned from API."));
+        }else{
+            setRates(reply);
+        }
     });
 
     connect(_request,&Request::downloadError,[=](QString errorString)
@@ -53,7 +100,6 @@ void MainWindow::init_request()
         _loader->stop();
         qDebug()<<errorString;
         ui->statusBar->showMessage(tr("Error while loading exchange rates."));
-
     });
 }
 
@@ -77,13 +123,16 @@ void MainWindow::showHistoricalRate()
 {
     if(_calWidget==nullptr){
         _calWidget= new CalenderWidget(this);
-
+        _calWidget->setWindowTitle(QApplication::applicationName()+" | "+tr("Historical data"));
         connect(_calWidget,&CalenderWidget::selectionChanged,[=](const QDate date){
             historicalDate = date.toString("yyyy-M-dd");
-            _calWidget->close();
+            if(settings.value("calendarStayVisible",true).toBool()==false)
+                _calWidget->close();
             getRates(true);
         });
     }
+    _calWidget->setWindowFlags(Qt::Dialog);
+    _calWidget->setWindowModality(Qt::NonModal);
     _calWidget->show();
 }
 
@@ -97,11 +146,12 @@ void MainWindow::getRates(bool historical)
     query.addQueryItem("base","USD");
     query.addQueryItem("places","2");
     base_url.setQuery(query);
-    //delete cached data if not historical
-    if(!historical)
-        _request->clearCache(base_url.toString());
-    _request->get(base_url);
-    qDebug()<<base_url;
+
+    if(!historical){
+        _homeUrl = base_url;
+    }
+    _currentUrl = base_url;
+    _request->get(_currentUrl);
     ui->statusBar->showMessage(tr("Loading exchange rates..."));
 }
 
@@ -120,7 +170,7 @@ void MainWindow::setRates(QString reply)
     }
     QString dateStr = jsonResponse.object().value("date").toString().trimmed();
     QDate date = QDate::fromString(dateStr,Qt::ISODate);
-    qDebug()<<date<<QDate::currentDate();
+    dateStr = date.toString("d-MMM-yyyy");
     if(date == QDate::currentDate())
         dateStr.append(tr(" (Today)"));
     ui->statusBar->showMessage(tr("Exchange rates from ")+dateStr);
@@ -134,7 +184,9 @@ void MainWindow::setRates(QString reply)
         ui->s2ComboBox->addItem(key);
         exchange.insert(key,val.toDouble(0.00));
     }
+
     ui->s1ComboBox->setCurrentText(settings.value("baseCurr","USD").toString());
+    //keep last set currency only if available in the current exchange
     if(exchange.keys().indexOf(currentS2Cur)!=-1)
      ui->s2ComboBox->setCurrentText(currentS2Cur);
 
@@ -142,6 +194,9 @@ void MainWindow::setRates(QString reply)
     ui->s2ComboBox->blockSignals(false);
     //init exchange
     ui->s1SpinBox->setValue(1.00);
+    foreach(QSizeGrip *wid, ui->statusBar->findChildren<QSizeGrip*>()){
+         wid->hide();
+    }
 }
 
 void MainWindow::setStyle(QString fname)
@@ -163,10 +218,25 @@ void MainWindow::setStyle(QString fname)
         lEd->setRange(0.01,99999999999999.99);
     }
     styleSheet.close();
+    qApp->setStyle(QStyleFactory::create("Fusion"));
+    QPalette palette;
+    palette.setColor(QPalette::Link,QColor("skyblue"));
+    qApp->setPalette(palette);
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *ev)
+{
+    if((obj==ui->s1ComboBox || obj==ui->s2ComboBox) && ev->type()==QEvent::Wheel)
+    {
+        return true;
+    }
+    return QMainWindow::eventFilter(obj,ev);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    settings.setValue("geometry",saveGeometry());
+    settings.setValue("windowState", saveState());
     if(_request!=nullptr){
         _request->blockSignals(true);
         _request->cancelAll();
@@ -218,9 +288,71 @@ void MainWindow::on_s2ComboBox_currentIndexChanged(const QString &arg1)
 
 double MainWindow::convert(double value, QString s_cur, QString t_cur)
 {
+    if(s_cur.isEmpty()|| t_cur.isEmpty())
+        return 0.00;
     qDebug()<<"CONVERT:"<<value<<s_cur<<" to "<<t_cur;
     double result = 0.00;
     result = (exchange.value("USD")/exchange.value(s_cur))*value;
     result = result*exchange.value(t_cur);
     return result;
+}
+
+void MainWindow::on_reload_clicked()
+{
+    //delete cached data if not historical
+    _request->clearCache(_currentUrl);
+    _request->get(_currentUrl);
+    ui->statusBar->showMessage(tr("Loading exchange rates..."));
+}
+
+void MainWindow::on_home_clicked()
+{
+    _request->clearCache(_homeUrl);
+    getRates(false);
+}
+
+//about
+void MainWindow::showAbout()
+{
+    QDialog *aboutDialog = new QDialog(this,Qt::Dialog);
+    aboutDialog->setWindowModality(Qt::WindowModal);
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *message = new QLabel(aboutDialog);
+    connect(message,&QLabel::linkActivated,[=](QString link){
+        QDesktopServices::openUrl(QUrl(link));
+    });
+    QPushButton *btn = new QPushButton("Donate",aboutDialog);
+    connect(btn,&QPushButton::clicked,[=](){
+        QDesktopServices::openUrl(QUrl("https://paypal.me/keshavnrj/4"));
+    });
+    btn->setIcon(QIcon(":/icons/others/paypal-line.png"));
+    layout->addWidget(message);
+    layout->addWidget(btn);
+    aboutDialog->setLayout(layout);
+    aboutDialog->setWindowTitle(tr("About")+" | "+QApplication::applicationName());
+    aboutDialog->setAttribute(Qt::WA_DeleteOnClose,true);
+    aboutDialog->show();
+
+    QString mes =
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><img src=':/icons/icon-64.png' /></p>"
+                 "<p align='center' style='-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><br /></p>"
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Designed and Developed</p>"
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>by <span style=' font-weight:600;'>Keshav Bhatt</span> &lt;keshavnrj@gmail.com&gt;</p>"
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Website: https://ktechpit.com</p>"
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Runtime: Qt 5.5.1</p>"
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Version: "+QApplication::applicationVersion()+"</p>"
+                 "<p align='center' style='-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><br /></p>"
+                 "<p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><a href='https://snapcraft.io/search?q=keshavnrj'>More Apps</p>"
+                 "<p align='center' style='-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><br /></p>";
+
+    QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect(this);
+    message->setGraphicsEffect(eff);
+    QPropertyAnimation *a = new QPropertyAnimation(eff,"opacity");
+    a->setDuration(1000);
+    a->setStartValue(0);
+    a->setEndValue(1);
+    a->setEasingCurve(QEasingCurve::InCurve);
+    a->start(QPropertyAnimation::DeleteWhenStopped);
+    message->setText(mes);
+    message->show();
 }
