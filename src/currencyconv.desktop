@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+GenericName=CurrencyConv
+Name=CurrencyConv
+Type=Application
+Icon=currencyconv
+Keywords=currency;converter
+Exec=currencyconv %F
+Categories=Utility;Qt;Finance;
+Terminal=false
+Name[en_US]=CurrencyConv
