@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QDate>
+#include <QSettings>
 
 namespace Ui {
 class CalenderWidget;
@@ -21,8 +22,11 @@ signals:
 private slots:
     void on_todayPushButon_clicked();
 
+    void on_stayVisible_toggled(bool checked);
+
 private:
     Ui::CalenderWidget *ui;
+    QSettings settings;
 };
 
 #endif // CALENDERWIDGET_H

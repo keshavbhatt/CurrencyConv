@@ -19,10 +19,20 @@
      <property name="gridVisible">
       <bool>true</bool>
      </property>
+     <property name="verticalHeaderFormat">
+      <enum>QCalendarWidget::NoVerticalHeader</enum>
+     </property>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="stayVisible">
+       <property name="text">
+        <string>Stay Visible</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="todayPushButon">
        <property name="text">
