@@ -1,5 +1,5 @@
 name: currencyconv
-version: '1.0'
+version: git
 summary: Currency Conversion application for Linux Desktop
 description: |
   Currency conversion application written in Qt.
@@ -52,13 +52,14 @@ plugs:
 
 parts:
    application:
-     source-type: git
-     source: .
+     source-type: local
+     source: src/
      plugin: qmake
      qt-version: qt5
      override-build: |
             snapcraftctl build
             sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/currencyconv.desktop
+            mkdir -p ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/
             cp -rf ${SNAPCRAFT_PART_SRC}/currencyconv.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/currencyconv.desktop
      after: [desktop-qt5]
 
