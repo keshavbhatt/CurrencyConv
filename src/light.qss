@@ -324,7 +324,7 @@ QMenu::right-arrow
 
 QWidget:disabled
 {
-    color: #454545;
+    color: #B9B9B9 ; /*#454545;*/
     background-color: #EFF0F1;
 }
 
@@ -580,16 +580,26 @@ QMenu::separator
     margin-right: 0.5ex;
 }
 
+QFrame[frameShape="4"],  /* QFrame::HLine == 0x0004 */
+QFrame[frameShape="5"]  /* QFrame::VLine == 0x0005 */
+{
+    border-width: 0.1ex;
+    padding: 0.1ex;
+    border-style: solid;
+    border-color: #BAB9B8;
+    background-color: #bcbfc2;
+    border-radius: 0.5ex;
+}
+
+
 QFrame[frameShape="2"],  /* QFrame::Panel == 0x0003 */
 QFrame[frameShape="3"],  /* QFrame::WinPanel == 0x0003 */
-QFrame[frameShape="4"],  /* QFrame::HLine == 0x0004 */
-QFrame[frameShape="5"],  /* QFrame::VLine == 0x0005 */
 QFrame[frameShape="6"]  /* QFrame::StyledPanel == 0x0006 */
 {
     border-width: 0.1ex;
     padding: 0.1ex;
     border-style: solid;
-    border-color: #EFF0F1;
+    border-color: #9FA0A4; /* #EFF0F1; */
     background-color: #bcbfc2;
     border-radius: 0.5ex;
 }
@@ -724,7 +734,6 @@ QComboBox::drop-down
 {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 1.5ex;
 
     border-left-width: 0ex;
     border-left-color: darkgray;
@@ -1501,6 +1510,7 @@ QStatusBar::item
 {
     border: 0px transparent dark;
 }
+
 
 QSplitter::handle
 {
