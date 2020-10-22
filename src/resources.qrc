@@ -72,5 +72,7 @@
         <file>icons/others/shopping-cart-line.png</file>
         <file>icons/others/picture-in-picture-line.png</file>
         <file>icons/others/home-8-line.png</file>
+        <file>resources/currencies.json</file>
+        <file>resources/countries.json</file>
     </qresource>
 </RCC>

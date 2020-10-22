@@ -8,8 +8,8 @@ RateGraph::RateGraph(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->fromDateEdit->setDisplayFormat("yyyy-M-dd");
-    ui->toDateEdit->setDisplayFormat("yyyy-M-dd");
+    ui->fromDateEdit->setDisplayFormat("dd-MMM-yyyy");
+    ui->toDateEdit->setDisplayFormat("dd-MMM-yyyy");
 
     ui->fromDateEdit->setDateRange(QDate(1999,1,1),QDate::currentDate());
     ui->toDateEdit->setDateRange(QDate(1999,1,1),QDate::currentDate());
@@ -17,7 +17,13 @@ RateGraph::RateGraph(QWidget *parent) :
     ui->fromDateEdit->setDate(QDate(2020,10,10));
     ui->toDateEdit->setDate(QDate::currentDate());
 
+    dataModel = new core::datamodel::DataModel(this);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableView->setModel(dataModel);
+
     setStatus(tr("idle"));
+
+    load_currencies();
 
     init_loader();
 
@@ -27,6 +33,17 @@ RateGraph::RateGraph(QWidget *parent) :
 RateGraph::~RateGraph()
 {
     delete ui;
+}
+
+void RateGraph::load_currencies()
+{
+   QJsonDocument currenciesdoc =  utils::loadJson(":/resources/currencies.json");
+   QJsonObject resultsObj         =  currenciesdoc.object().value("symbols").toObject();
+   foreach (const QString &key, resultsObj.keys()) {
+       QString name = resultsObj.value(key).toObject().value("description").toString();
+       QString id = resultsObj.value(key).toObject().value("code").toString();
+       ui->currencyComboBox->addItem(id+" ("+name+")",QVariant(id));
+   }
 }
 
 void RateGraph::init_loader()
@@ -41,7 +58,7 @@ void RateGraph::init_loader()
         _loader->setLineWidth(2);
         _loader->setInnerRadius(2);
         _loader->setRevolutionsPerSecond(3);
-        _loader->setColor(QColor(159,160,164));
+        _loader->setColor(QColor("#3DAEE9"));
     }
 }
 
@@ -56,7 +73,9 @@ void RateGraph::init_request()
     {
         _loader->stop();
         if(reply.isEmpty()){
-            setStatus(tr("Empty response returned from API."));
+            QString errorString = tr("Empty response returned from API.");
+            setStatus(errorString);
+            QMessageBox::information(this,tr("Error"),errorString);
         }else{
             setRates(reply);
         }
@@ -65,7 +84,7 @@ void RateGraph::init_request()
     connect(_request,&Request::downloadError,[=](QString errorString)
     {
         _loader->stop();
-        qDebug()<<errorString;
+        QMessageBox::information(this,tr("Error"),errorString);
         setStatus(tr("Error while loading exchange rates."));
     });
 }
@@ -81,12 +100,14 @@ void RateGraph::setRates(QString reply)
     }
     QJsonObject rateObj = jsonResponse.object().value("rates").toObject();
     foreach (const QString &key, rateObj.keys()) {
-        auto rateValue = rateObj.value(key).toObject().value(ui->currencyComboBox->currentText()).toDouble(0.00);
+        auto rateValue = rateObj.value(key).toObject().value(ui->currencyComboBox->currentData(Qt::UserRole).toString()).toDouble(0.00);
         currencyRates.push_front(qMakePair(QDate::fromString(key,Qt::ISODate), rateValue));
     }
-    if(!currencyRates.isEmpty())
+    if(!currencyRates.isEmpty()){
+        dataModel->insertCustomData(currencyRates);
         ui->plotWidget->initGraph(currencyRates);
-    setStatus(tr("Loaded exchange rates"));
+    }
+    setStatus(tr("Loaded exchange rates."));
 }
 
 void RateGraph::on_updatePushBtn_clicked()
@@ -98,11 +119,11 @@ void RateGraph::on_updatePushBtn_clicked()
     QUrlQuery query;
     query.addQueryItem("start_date",fromdate);
     query.addQueryItem("end_date",todate);
-    query.addQueryItem("symbols",ui->currencyComboBox->currentText());
+    query.addQueryItem("symbols",ui->currencyComboBox->currentData(Qt::UserRole).toString());
     query.addQueryItem("base","USD");
-//    query.addQueryItem("places","2");
+    query.addQueryItem("places","4"); //NOTE:change this is datamodel too
     base_url.setQuery(query);
-    qDebug()<<base_url;
+    //qDebug()<<base_url;
     _currentUrl = base_url;
     _request->get(_currentUrl);
     setStatus(tr("Loading exchange rates..."));

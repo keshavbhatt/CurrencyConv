@@ -5,6 +5,8 @@
 #include "request.h"
 #include "waitingspinnerwidget.h"
 #include "currencyrate.h"
+#include "utils.h"
+#include "lib/datamodel.h"
 
 namespace Ui {
 class RateGraph;
@@ -25,13 +27,14 @@ private slots:
     void init_loader();
     void setStatus(QString message);
     void setRates(QString reply);
+    void load_currencies();
 private:
     Ui::RateGraph *ui;
     Request *_request = nullptr;
     WaitingSpinnerWidget *_loader= nullptr;
     QUrl _currentUrl;
     QList<core::CurrencyRate> currencyRates;
-
+    core::datamodel::DataModel* dataModel;
 };
 
 #endif // RATEGRAPH_H

@@ -47,7 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::set_style()
 {
-    setStyle(":/"+settings.value("theme","light").toString()+".qss");
+    //:/qbreeze/dark.qss
+    setStyle(":/qbreeze/"+settings.value("theme","light").toString()+".qss");
     bool light = false;
     light = settings.value("theme","light").toString()=="light"?true:false;
     ui->actionDark->setChecked(!light);
@@ -123,7 +124,7 @@ void MainWindow::init_loader()
         _loader->setLineWidth(2);
         _loader->setInnerRadius(2);
         _loader->setRevolutionsPerSecond(3);
-        _loader->setColor(QColor(159,160,164));
+        _loader->setColor(QColor("#3DAEE9"));
     }
 }
 
@@ -226,7 +227,7 @@ void MainWindow::setStyle(QString fname)
         lEd->setRange(0.01,99999999999999.99);
     }
     styleSheet.close();
-    qApp->setStyle(QStyleFactory::create("Fusion"));
+    //qApp->setStyle(QStyleFactory::create("Fusion"));
     QPalette palette;
     palette.setColor(QPalette::Link,QColor("skyblue"));
     qApp->setPalette(palette);

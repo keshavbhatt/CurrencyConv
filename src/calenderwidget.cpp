@@ -18,23 +18,23 @@ CalenderWidget::CalenderWidget(QWidget *parent) :
        ui->todayPushButon->setEnabled(ui->calendarWidget->selectedDate()!=QDate::currentDate());
     });
 
-    foreach (QWidget *wid, this->findChildren<QWidget*>()) {
+//    foreach (QWidget *wid, this->findChildren<QWidget*>()) {
 
-        if(wid->objectName()=="qt_calendar_prevmonth"
-                || wid->objectName()=="qt_calendar_nextmonth"){
-            wid->setStyleSheet("padding:4px");
-        }
-        if(wid->objectName()=="qt_calendar_monthbutton"){
-            QToolButton *btn = qobject_cast<QToolButton*>(wid);
-            btn->setStyleSheet("QToolButton::menu-indicator{width:0px;}");
-        }
-        if(wid->objectName()=="qt_calendar_calendarview"){
-            wid->setStyleSheet("border:none;");
-        }
-        if(wid->objectName()=="qt_calendar_navigationbar"){
-            wid->setContentsMargins(0, 0, 0, 4);
-        }
-    }
+//        if(wid->objectName()=="qt_calendar_prevmonth"
+//                || wid->objectName()=="qt_calendar_nextmonth"){
+//            wid->setStyleSheet("padding:4px");
+//        }
+//        if(wid->objectName()=="qt_calendar_monthbutton"){
+//            QToolButton *btn = qobject_cast<QToolButton*>(wid);
+//            btn->setStyleSheet("QToolButton::menu-indicator{width:0px;}");
+//        }
+//        if(wid->objectName()=="qt_calendar_calendarview"){
+//            wid->setStyleSheet("border:none;");
+//        }
+//        if(wid->objectName()=="qt_calendar_navigationbar"){
+//            wid->setContentsMargins(0, 0, 0, 4);
+//        }
+//    }
 }
 
 CalenderWidget::~CalenderWidget()

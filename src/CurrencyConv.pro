@@ -29,23 +29,27 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 SOURCES += \
         calenderwidget.cpp \
         error.cpp \
+        lib/datamodel.cpp \
         lib/graphplot.cpp \
         lib/QCustomPlot/qcustomplot.cpp \
         main.cpp \
         mainwindow.cpp \
         rategraph.cpp \
         request.cpp \
+        utils.cpp \
         waitingspinnerwidget.cpp
 
 HEADERS += \
         calenderwidget.h \
         currencyrate.h \
         error.h \
+        lib/datamodel.h \
         lib/graphplot.h \
         lib/QCustomPlot/qcustomplot.h \
         mainwindow.h \
         rategraph.h \
         request.h \
+        utils.h \
         waitingspinnerwidget.h
 
 FORMS += \
