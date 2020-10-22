@@ -188,6 +188,7 @@
      <addaction name="actionDark"/>
     </widget>
     <addaction name="actionHistorical_rates"/>
+    <addaction name="actionRate_Graph"/>
     <addaction name="menuTheme"/>
    </widget>
    <addaction name="menuFile"/>
@@ -244,6 +245,11 @@
    </property>
    <property name="text">
     <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionRate_Graph">
+   <property name="text">
+    <string>Rate Graph</string>
    </property>
   </action>
  </widget>
