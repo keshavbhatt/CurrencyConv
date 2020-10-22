@@ -79,9 +79,9 @@ void MainWindow::init_appMenu()
 
     connect(ui->actionRate_Graph,&QAction::triggered,[=](){
         _rateGraph = new RateGraph(this);
-        _rateGraph->setWindowTitle(QApplication::applicationName()+" | "+tr("Rate Graphs"));
+        _rateGraph->setWindowTitle(QApplication::applicationName()+" | "+tr("Rate Graph"));
         _rateGraph->setWindowModality(Qt::NonModal);
-        _rateGraph->setWindowFlags(Qt::Dialog);
+        _rateGraph->setWindowFlags(Qt::Window);
         _rateGraph->setAttribute(Qt::WA_DeleteOnClose);
         _rateGraph->show();
     });
