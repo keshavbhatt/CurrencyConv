@@ -2,6 +2,7 @@
 #define RATEGRAPH_H
 
 #include <QWidget>
+#include <QSettings>
 #include "request.h"
 #include "waitingspinnerwidget.h"
 #include "currencyrate.h"
@@ -20,6 +21,8 @@ public:
     explicit RateGraph(QWidget *parent = nullptr);
     ~RateGraph();
 
+protected slots:
+    void closeEvent(QCloseEvent *ev);
 private slots:
     void on_updatePushBtn_clicked();
 
@@ -28,6 +31,8 @@ private slots:
     void setStatus(QString message);
     void setRates(QString reply);
     void load_currencies();
+    void on_currencyComboBox_currentIndexChanged(int index);
+
 private:
     Ui::RateGraph *ui;
     Request *_request = nullptr;
@@ -35,6 +40,7 @@ private:
     QUrl _currentUrl;
     QList<core::CurrencyRate> currencyRates;
     core::datamodel::DataModel* dataModel;
+    QSettings settings;
 };
 
 #endif // RATEGRAPH_H
