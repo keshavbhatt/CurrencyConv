@@ -12,7 +12,7 @@ public:
     Request(QObject* parent=0);
     virtual ~Request();
 public slots:
-    void get(const QUrl url);
+    void get(const QUrl url,bool preferCache = true);
     void clearCache(QUrl url);
     void cancelAll();
 signals:
