@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml network
+QT       += core gui xml network printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,22 +29,30 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 SOURCES += \
         calenderwidget.cpp \
         error.cpp \
+        lib/graphplot.cpp \
+        lib/QCustomPlot/qcustomplot.cpp \
         main.cpp \
         mainwindow.cpp \
+        rategraph.cpp \
         request.cpp \
         waitingspinnerwidget.cpp
 
 HEADERS += \
         calenderwidget.h \
+        currencyrate.h \
         error.h \
+        lib/graphplot.h \
+        lib/QCustomPlot/qcustomplot.h \
         mainwindow.h \
+        rategraph.h \
         request.h \
         waitingspinnerwidget.h
 
 FORMS += \
         calenderwidget.ui \
         error.ui \
-        mainwindow.ui
+        mainwindow.ui \
+        rategraph.ui
 
 # Default rules for deployment.
 isEmpty(PREFIX){
