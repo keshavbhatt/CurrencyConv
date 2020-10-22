@@ -45,12 +45,6 @@ QVariant core::datamodel::DataModel::data(const QModelIndex &index, int role) co
     case Qt::TextAlignmentRole:
         return Qt::AlignCenter;
 
-    case Qt::BackgroundRole:
-        if(index.row() % 2 == 0)
-            return QBrush(QColor(245,245,245));
-        else
-            return QBrush(Qt::white);
-
     case Qt::TextColorRole:
         if(index.column() == 2) {
             if(index.data(Qt::DisplayRole).toDouble() > 0)
@@ -58,7 +52,6 @@ QVariant core::datamodel::DataModel::data(const QModelIndex &index, int role) co
             else
                 return  QColor(Qt::red);
         }
-        return QColor(Qt::black);
 
     default:
         return QVariant();
