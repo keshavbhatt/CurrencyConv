@@ -43,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent) :
     init_request();
 
     getRates(false);
-
 }
 
 void MainWindow::set_style()
@@ -75,6 +74,15 @@ void MainWindow::init_appMenu()
     connect(ui->actionAbout_Application,SIGNAL(triggered(bool)),this,SLOT(showAbout()));
     connect(ui->actionRate_in_store,&QAction::triggered,[=](){
         QDesktopServices::openUrl(QUrl("snap://currencyconv"));
+    });
+
+    connect(ui->actionRate_Graph,&QAction::triggered,[=](){
+        _rateGraph = new RateGraph(this);
+        _rateGraph->setWindowTitle(QApplication::applicationName()+" | "+tr("Rate Graphs"));
+        _rateGraph->setWindowModality(Qt::NonModal);
+        _rateGraph->setWindowFlags(Qt::Dialog);
+        _rateGraph->setAttribute(Qt::WA_DeleteOnClose);
+        _rateGraph->show();
     });
 }
 
@@ -144,7 +152,7 @@ void MainWindow::getRates(bool historical)
     }
     QUrlQuery query;
     query.addQueryItem("base","USD");
-    query.addQueryItem("places","2");
+    //query.addQueryItem("places","2");
     base_url.setQuery(query);
 
     if(!historical){
@@ -300,8 +308,8 @@ double MainWindow::convert(double value, QString s_cur, QString t_cur)
 void MainWindow::on_reload_clicked()
 {
     //delete cached data if not historical
-    _request->clearCache(_currentUrl);
-    _request->get(_currentUrl);
+    //_request->clearCache(_currentUrl);
+    _request->get(_currentUrl,false);
     ui->statusBar->showMessage(tr("Loading exchange rates..."));
 }
 

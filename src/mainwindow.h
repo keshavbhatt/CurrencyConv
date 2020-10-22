@@ -20,6 +20,7 @@
 #include "request.h"
 #include "error.h"
 #include "calenderwidget.h"
+#include "rategraph.h"
 
 namespace Ui {
 class MainWindow;
@@ -71,6 +72,7 @@ private slots:
     void on_home_clicked();
 
     void showAbout();
+
 private:
 
     Ui::MainWindow *ui;
@@ -83,6 +85,8 @@ private:
     CalenderWidget *_calWidget = nullptr;
     QString historicalDate;
     QUrl _currentUrl,_homeUrl;
+
+    RateGraph * _rateGraph=nullptr;
 };
 
 #endif // MAINWINDOW_H
