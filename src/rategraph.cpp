@@ -8,13 +8,33 @@ RateGraph::RateGraph(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QSplitter *split1 = new QSplitter;
+    split1->setObjectName("split1");
+    split1->setOrientation(Qt::Horizontal);
+    split1->addWidget(ui->plotViewWidget);
+    split1->addWidget(ui->dataViewWidget);
+    split1->setStretchFactor(0,2);
+    split1->setStretchFactor(1,1);
+    split1->setCollapsible(0,false);
+    split1->setCollapsible(1,false);
+
+    this->layout()->setContentsMargins(0,0,0,0);
+    this->layout()->addWidget(split1);
+
+    if(settings.value("geometry").isValid())
+        restoreGeometry(settings.value("geometry").toByteArray());
+    if(settings.value("splitPos").isValid())
+        split1->restoreGeometry(settings.value("splitPos").toByteArray());
+    if(settings.value("splitState").isValid())
+        split1->restoreState(settings.value("splitState").toByteArray());
+
     ui->fromDateEdit->setDisplayFormat("dd-MMM-yyyy");
     ui->toDateEdit->setDisplayFormat("dd-MMM-yyyy");
 
     ui->fromDateEdit->setDateRange(QDate(1999,1,1),QDate::currentDate());
     ui->toDateEdit->setDateRange(QDate(1999,1,1),QDate::currentDate());
 
-    ui->fromDateEdit->setDate(QDate(2020,10,10));
+    ui->fromDateEdit->setDate(QDate::currentDate().addDays(-365));
     ui->toDateEdit->setDate(QDate::currentDate());
 
     dataModel = new core::datamodel::DataModel(this);
@@ -37,13 +57,17 @@ RateGraph::~RateGraph()
 
 void RateGraph::load_currencies()
 {
-   QJsonDocument currenciesdoc =  utils::loadJson(":/resources/currencies.json");
-   QJsonObject resultsObj         =  currenciesdoc.object().value("symbols").toObject();
-   foreach (const QString &key, resultsObj.keys()) {
-       QString name = resultsObj.value(key).toObject().value("description").toString();
-       QString id = resultsObj.value(key).toObject().value("code").toString();
-       ui->currencyComboBox->addItem(id+" ("+name+")",QVariant(id));
-   }
+   ui->currencyComboBox->blockSignals(true);
+       QJsonDocument currenciesdoc =  utils::loadJson(":/resources/currencies.json");
+       QJsonObject resultsObj         =  currenciesdoc.object().value("symbols").toObject();
+       foreach (const QString &key, resultsObj.keys()) {
+           QString name = resultsObj.value(key).toObject().value("description").toString();
+           QString id = resultsObj.value(key).toObject().value("code").toString();
+           ui->currencyComboBox->addItem(id+" ("+name+")",QVariant(id));
+       }
+       //load last selected curr
+       ui->currencyComboBox->setCurrentIndex(settings.value("currencyIndex",66).toInt());
+   ui->currencyComboBox->blockSignals(false);
 }
 
 void RateGraph::init_loader()
@@ -141,4 +165,20 @@ void RateGraph::setStatus(QString message)
     a->start(QPropertyAnimation::DeleteWhenStopped);
     ui->status->setText(message);
     ui->status->show();
+}
+
+void RateGraph::on_currencyComboBox_currentIndexChanged(int index)
+{
+    settings.setValue("currencyIndex",index);
+}
+
+void RateGraph::closeEvent(QCloseEvent *ev)
+{
+    qDebug()<<"closed";
+    settings.setValue("geometry",this->saveGeometry());
+    QSplitter *split1 = this->findChild<QSplitter*>("split1");
+    settings.setValue("splitPos",split1->saveGeometry());
+    settings.setValue("splitState",split1->saveState());
+
+    QWidget::closeEvent(ev);
 }
