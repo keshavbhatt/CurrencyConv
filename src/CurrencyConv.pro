@@ -28,7 +28,6 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
         calenderwidget.cpp \
-        error.cpp \
         lib/datamodel.cpp \
         lib/graphplot.cpp \
         lib/QCustomPlot/qcustomplot.cpp \
@@ -42,7 +41,6 @@ SOURCES += \
 HEADERS += \
         calenderwidget.h \
         currencyrate.h \
-        error.h \
         lib/datamodel.h \
         lib/graphplot.h \
         lib/QCustomPlot/qcustomplot.h \
@@ -54,7 +52,6 @@ HEADERS += \
 
 FORMS += \
         calenderwidget.ui \
-        error.ui \
         mainwindow.ui \
         rategraph.ui
 
