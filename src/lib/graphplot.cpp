@@ -16,11 +16,9 @@ GraphPlot::GraphPlot(QWidget *parent) :
 
     this->yAxis->setRange(-5.00,5.00); //initial values,we change em in init
 
-    this->setInteraction(QCP::iRangeZoom,true);
-    this->axisRect()->setRangeZoom(Qt::Vertical|Qt::Horizontal);
+    this->axisRect()->setupFullAxesBox();
+    this->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
 
-    this->setInteraction(QCP::iRangeDrag, true);
-    this->axisRect()->setRangeDrag(Qt::Vertical|Qt::Horizontal);
 
     tracer = new QCPItemTracer(this);
     tracer->setStyle(QCPItemTracer::tsCircle);
@@ -50,9 +48,14 @@ void GraphPlot::initGraph(const QList<CurrencyRate> &currencyRates)
         }
 
         this->graph(0)->data()->set(data);
-        this->graph()->setLineStyle((QCPGraph::LineStyle)(rand()%5+1));
+        this->graph()->setLineStyle((QCPGraph::LineStyle)(5));
         if (rand()%100 > 50)
-          this->graph()->setScatterStyle(QCPScatterStyle((QCPScatterStyle::ScatterShape)(rand()%14+1)));
+          this->graph()->setScatterStyle(QCPScatterStyle((QCPScatterStyle::ScatterShape)(2)));
+
+        QPen graphPen;
+        graphPen.setColor(QColor(rand()%245+10, rand()%245+10, rand()%245+10));
+        graphPen.setWidthF(2.0);
+        this->graph()->setPen(graphPen);
 
         graphHasData = true;
 
