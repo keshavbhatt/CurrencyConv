@@ -594,6 +594,7 @@ QComboBox QAbstractItemView {
 }
 
 QComboBox::drop-down {
+    margin-right: 4px;
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;
@@ -1176,7 +1177,9 @@ QFrame[width="3"] {
 }
 
 QSplitter::handle {
-    border: 1px none #76797C;
+    border: 0px none #76797C;
+    width : 2px;
+    background: #76797C;
 }
 
 QSplitter::handle:horizontal {
@@ -1220,6 +1223,7 @@ QDateEdit QAbstractItemView {
 }
 
 QDateEdit::drop-down {
+    margin-right: 4px;
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;

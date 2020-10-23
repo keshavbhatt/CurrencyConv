@@ -190,6 +190,11 @@ QMenu::item:selected {
     color: #232627;
 }
 
+QMenu::item:disabled {
+   background-color: #e1e1e2;
+   color: #76797C;
+}
+
 QMenu::separator {
     height: 2px;
     background: lightblue;
@@ -590,6 +595,7 @@ QComboBox QAbstractItemView {
 }
 
 QComboBox::drop-down {
+    margin-right: 4px;
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;
@@ -1172,7 +1178,9 @@ QFrame[width="3"] {
 }
 
 QSplitter::handle {
-   border: 1px none #BCBEBF;
+   border: 0px none #BCBEBF;
+   width : 2px;
+   background: #BCBEBF;
 }
 
 QSplitter::handle:horizontal {
@@ -1216,6 +1224,7 @@ QDateEdit QAbstractItemView {
 }
 
 QDateEdit::drop-down {
+    margin-right: 4px;
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;
