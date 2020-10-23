@@ -8,6 +8,7 @@
 #include "currencyrate.h"
 #include "utils.h"
 #include "lib/datamodel.h"
+#include "lib/QCustomPlot/qcustomplot.h"
 
 namespace Ui {
 class RateGraph;
@@ -32,7 +33,7 @@ private slots:
     void setRates(QString reply);
     void load_currencies();
     void on_currencyComboBox_currentIndexChanged(int index);
-
+    void graphClicked(QCPAbstractPlottable *plottable, int dataIndex);
 private:
     Ui::RateGraph *ui;
     Request *_request = nullptr;

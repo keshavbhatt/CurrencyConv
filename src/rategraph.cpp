@@ -41,13 +41,31 @@ RateGraph::RateGraph(QWidget *parent) :
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->setModel(dataModel);
 
+
     setStatus(tr("idle"));
+
+    connect(ui->plotWidget, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
 
     load_currencies();
 
     init_loader();
 
     init_request();
+}
+
+void RateGraph::graphClicked(QCPAbstractPlottable *plottable, int dataIndex)
+{
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+  qDebug()<<"clicked"<<dataIndex;
+  // since we know we only have QCPGraphs in the plot, we can immediately access interface1D()
+  // usually it's better to first check whether interface1D() returns non-zero, and only then use it.
+  ui->tableView->selectRow(dataIndex);
+  ui->tableView->setCurrentIndex(ui->tableView->model()->index(2, 0));
+  double dataValue = plottable->interface1D()->dataMainValue(dataIndex);
+  QString message = QString("Clicked on graph '%1' at data point #%2 with value %3.").arg(plottable->name()).arg(dataIndex).arg(dataValue);
+  setStatus(message);
 }
 
 RateGraph::~RateGraph()
@@ -58,7 +76,7 @@ RateGraph::~RateGraph()
 void RateGraph::load_currencies()
 {
    ui->currencyComboBox->blockSignals(true);
-       QJsonDocument currenciesdoc =  utils::loadJson(":/resources/currencies.json");
+       QJsonDocument currenciesdoc    =  utils::loadJson(":/resources/currencies.json");
        QJsonObject resultsObj         =  currenciesdoc.object().value("symbols").toObject();
        foreach (const QString &key, resultsObj.keys()) {
            QString name = resultsObj.value(key).toObject().value("description").toString();
