@@ -73,13 +73,14 @@ private slots:
 
     void showAbout();
 
+    void load_currencies();
 private:
 
     Ui::MainWindow *ui;
     WaitingSpinnerWidget *_loader = nullptr;
-    Error *_error = nullptr;
     Request *_request = nullptr;
 
+    QMap<QString,QString> currencyMeta;
     QMap<QString,double> exchange;
     QSettings settings;
     CalenderWidget *_calWidget = nullptr;

@@ -42,9 +42,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     init_request();
 
+    load_currencies();
+
     getRates(false);
 }
 
+void MainWindow::load_currencies()
+{
+   QJsonDocument currenciesdoc    =  utils::loadJson(":/resources/currencies.json");
+   QJsonObject resultsObj         =  currenciesdoc.object().value("symbols").toObject();
+   foreach (const QString &key, resultsObj.keys()) {
+       QString name = resultsObj.value(key).toObject().value("description").toString();
+       QString id = resultsObj.value(key).toObject().value("code").toString();
+       currencyMeta.insert(id,name);
+   }
+}
 void MainWindow::set_style()
 {
     //:/qbreeze/dark.qss
@@ -166,7 +178,9 @@ void MainWindow::getRates(bool historical)
 
 void MainWindow::setRates(QString reply)
 {
-    QString currentS2Cur = ui->s2ComboBox->currentText();
+    QString currentS2Cur = ui->s2ComboBox->currentData(Qt::UserRole).toString();
+    QString currentS1Cur = ui->s1ComboBox->currentData(Qt::UserRole).toString();
+
 
     exchange.clear();
     ui->s1ComboBox->clear();
@@ -187,17 +201,20 @@ void MainWindow::setRates(QString reply)
     //popluate exchange
     ui->s1ComboBox->blockSignals(true);
     ui->s2ComboBox->blockSignals(true);
-    foreach (const QString &key, rateObj.keys()) {
+    foreach (const QString key, rateObj.keys()) {
         QJsonValue val = rateObj.value(key);
-        ui->s1ComboBox->addItem(key);
-        ui->s2ComboBox->addItem(key);
+        ui->s1ComboBox->addItem(key+" ("+currencyMeta.value(key)+")",key);
+        ui->s2ComboBox->addItem(key+" ("+currencyMeta.value(key)+")",key);
         exchange.insert(key,val.toDouble(0.00));
     }
 
-    ui->s1ComboBox->setCurrentText(settings.value("baseCurr","USD").toString());
+//    ui->s1ComboBox->setCurrentText(settings.value("baseCurr","USD").toString());
     //keep last set currency only if available in the current exchange
     if(exchange.keys().indexOf(currentS2Cur)!=-1)
      ui->s2ComboBox->setCurrentText(currentS2Cur);
+    if(exchange.keys().indexOf(currentS1Cur)!=-1)
+     ui->s1ComboBox->setCurrentText(currentS1Cur);
+
 
     ui->s1ComboBox->blockSignals(false);
     ui->s2ComboBox->blockSignals(false);
@@ -223,7 +240,7 @@ void MainWindow::setStyle(QString fname)
                            "margin-right: -16px;"
                            "background-color:transparent;}");
         lEd->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        lEd->setGroupSeparatorShown(true);
+        lEd->setGroupSeparatorShown(false);
         lEd->setRange(0.01,99999999999999.99);
     }
     styleSheet.close();
@@ -263,7 +280,9 @@ void MainWindow::on_s1SpinBox_valueChanged(double arg1)
 {
     ui->s1SpinBox->blockSignals(true);
     ui->s1ComboBox->blockSignals(true);
-    ui->s2SpinBox->setValue(convert(arg1,ui->s1ComboBox->currentText(),ui->s2ComboBox->currentText()));
+    ui->s2SpinBox->blockSignals(true);
+    ui->s2SpinBox->setValue(convert(arg1,ui->s1ComboBox->currentData(Qt::UserRole).toString(),ui->s2ComboBox->currentData(Qt::UserRole).toString()));
+    ui->s2SpinBox->blockSignals(false);
     ui->s1ComboBox->blockSignals(false);
     ui->s1SpinBox->blockSignals(false);
 }
@@ -272,7 +291,9 @@ void MainWindow::on_s2SpinBox_valueChanged(double arg1)
 {
     ui->s2SpinBox->blockSignals(true);
     ui->s2ComboBox->blockSignals(true);
-    ui->s1SpinBox->setValue(convert(arg1,ui->s2ComboBox->currentText(),ui->s1ComboBox->currentText()));
+    ui->s1SpinBox->blockSignals(true);
+    ui->s1SpinBox->setValue(convert(arg1,ui->s2ComboBox->currentData(Qt::UserRole).toString(),ui->s1ComboBox->currentData(Qt::UserRole).toString()));
+    ui->s1SpinBox->blockSignals(false);
     ui->s2ComboBox->blockSignals(false);
     ui->s2SpinBox->blockSignals(false);
 }
@@ -281,7 +302,9 @@ void MainWindow::on_s1ComboBox_currentIndexChanged(const QString &arg1)
 {
     ui->s2SpinBox->blockSignals(true);
     ui->s2ComboBox->blockSignals(true);
-    ui->s1SpinBox->setValue(convert(ui->s2SpinBox->value(),ui->s2ComboBox->currentText(),arg1));
+    ui->s1SpinBox->blockSignals(true);
+    ui->s1SpinBox->setValue(convert(ui->s2SpinBox->value(),ui->s2ComboBox->currentData(Qt::UserRole).toString(),arg1.split(" ").first()));
+    ui->s1SpinBox->blockSignals(false);
     ui->s2ComboBox->blockSignals(false);
     ui->s2SpinBox->blockSignals(false);
 }
@@ -290,7 +313,9 @@ void MainWindow::on_s2ComboBox_currentIndexChanged(const QString &arg1)
 {
     ui->s1SpinBox->blockSignals(true);
     ui->s1ComboBox->blockSignals(true);
-    ui->s2SpinBox->setValue(convert(ui->s1SpinBox->value(),ui->s1ComboBox->currentText(),arg1));
+    ui->s2SpinBox->blockSignals(true);
+    ui->s2SpinBox->setValue(convert(ui->s1SpinBox->value(),ui->s1ComboBox->currentData(Qt::UserRole).toString(),arg1.split(" ").first()));
+    ui->s2SpinBox->blockSignals(false);
     ui->s1ComboBox->blockSignals(false);
     ui->s1SpinBox->blockSignals(false);
 }

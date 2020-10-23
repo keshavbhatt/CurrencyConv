@@ -34,7 +34,11 @@
            <number>9</number>
           </property>
           <item alignment="Qt::AlignRight">
-           <widget class="QComboBox" name="s1ComboBox"/>
+           <widget class="QComboBox" name="s1ComboBox">
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
