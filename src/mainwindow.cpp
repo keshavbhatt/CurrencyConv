@@ -181,7 +181,6 @@ void MainWindow::setRates(QString reply)
     QString currentS2Cur = ui->s2ComboBox->currentData(Qt::UserRole).toString();
     QString currentS1Cur = ui->s1ComboBox->currentData(Qt::UserRole).toString();
 
-
     exchange.clear();
     ui->s1ComboBox->clear();
     ui->s2ComboBox->clear();
@@ -198,9 +197,11 @@ void MainWindow::setRates(QString reply)
         dateStr.append(tr(" (Today)"));
     ui->statusBar->showMessage(tr("Exchange rates from ")+dateStr);
     QJsonObject rateObj = jsonResponse.object().value("rates").toObject();
+
     //popluate exchange
     ui->s1ComboBox->blockSignals(true);
     ui->s2ComboBox->blockSignals(true);
+
     foreach (const QString key, rateObj.keys()) {
         QJsonValue val = rateObj.value(key);
         ui->s1ComboBox->addItem(key+" ("+currencyMeta.value(key)+")",key);
@@ -208,13 +209,24 @@ void MainWindow::setRates(QString reply)
         exchange.insert(key,val.toDouble(0.00));
     }
 
-//    ui->s1ComboBox->setCurrentText(settings.value("baseCurr","USD").toString());
-    //keep last set currency only if available in the current exchange
-    if(exchange.keys().indexOf(currentS2Cur)!=-1)
-     ui->s2ComboBox->setCurrentText(currentS2Cur);
-    if(exchange.keys().indexOf(currentS1Cur)!=-1)
-     ui->s1ComboBox->setCurrentText(currentS1Cur);
-
+    //combobox restore curr
+    if(!currentS1Cur.isEmpty() || !currentS2Cur.isEmpty()){
+        //keep last set currency only if available in the current exchange
+        int iCb1 = getIndexByDataRole(currentS1Cur,ui->s1ComboBox);
+        int iCb2 = getIndexByDataRole(currentS2Cur,ui->s2ComboBox);
+        if(exchange.keys().indexOf(currentS1Cur)!=-1
+                && iCb1 != -1)
+         ui->s1ComboBox->setCurrentIndex(iCb1);
+        if(exchange.keys().indexOf(currentS2Cur)!=-1
+                && iCb2 != -1)
+         ui->s2ComboBox->setCurrentIndex(iCb2);
+    }else{
+        //set last changed/saved currency only if available in the current exchange
+        int s1CIndex = getIndexByDataRole(settings.value("s1CurrCode","USD").toString(),ui->s1ComboBox);
+        int s2CIndex = getIndexByDataRole(settings.value("s2CurrCode","INR").toString(),ui->s2ComboBox);
+        ui->s1ComboBox->setCurrentIndex(s1CIndex == -1 ? 0 : s1CIndex);
+        ui->s2ComboBox->setCurrentIndex(s2CIndex == -1 ? 0 : s2CIndex);
+    }
 
     ui->s1ComboBox->blockSignals(false);
     ui->s2ComboBox->blockSignals(false);
@@ -223,6 +235,18 @@ void MainWindow::setRates(QString reply)
     foreach(QSizeGrip *wid, ui->statusBar->findChildren<QSizeGrip*>()){
          wid->hide();
     }
+}
+
+int MainWindow::getIndexByDataRole(QString dataValue,QComboBox *cBox)
+{
+    int index = -1;
+    for (int i = 0; i < cBox->count(); ++i) {
+        if(dataValue == cBox->itemData(i).toString()){
+            index = i;
+            break;
+        }
+    }
+    return index;
 }
 
 void MainWindow::setStyle(QString fname)
@@ -261,6 +285,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *ev)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    settings.setValue("s1CurrCode",ui->s1ComboBox->currentData());
+    settings.setValue("s2CurrCode",ui->s2ComboBox->currentData());
+
     settings.setValue("geometry",saveGeometry());
     settings.setValue("windowState", saveState());
     if(_request!=nullptr){

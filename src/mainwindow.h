@@ -74,6 +74,7 @@ private slots:
     void showAbout();
 
     void load_currencies();
+    int getIndexByDataRole(QString dataValue, QComboBox *cBox);
 private:
 
     Ui::MainWindow *ui;
