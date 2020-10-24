@@ -18,12 +18,29 @@ GraphPlot::GraphPlot(QWidget *parent) :
 
     this->axisRect()->setupFullAxesBox();
     this->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
-
-
     tracer = new QCPItemTracer(this);
     tracer->setStyle(QCPItemTracer::tsCircle);
     graphHasData = false;
     connect(this, &GraphPlot::mouseMove,this, &GraphPlot::slotMouseMove);
+
+    //style
+    QColor backgroundColor = settings.value("theme").toString() == "light" ? QColor("#eff0f1") : QColor("#31363b") ;
+    setBackground(QBrush(backgroundColor));
+
+    QColor labelColor = settings.value("theme").toString() == "light" ? QColor("#232627") : QColor("#eff0f1") ;
+
+    this->xAxis->setLabelColor(labelColor);
+    this->yAxis->setLabelColor(labelColor);
+
+    QList<QCPAxis *> axises;
+    axises<<xAxis<<xAxis2<<yAxis<<yAxis2;
+
+    foreach (QCPAxis *axis, axises) {
+        axis->setTickPen(QPen(labelColor));
+        axis->setTickLabelColor(labelColor);
+        axis->setSubTickPen(QPen(labelColor));
+        axis->setBasePen(QPen(labelColor));
+    }
 
 }
 
@@ -48,12 +65,13 @@ void GraphPlot::initGraph(const QList<CurrencyRate> &currencyRates)
         }
 
         this->graph(0)->data()->set(data);
-        this->graph()->setLineStyle((QCPGraph::LineStyle)(5));
+        this->graph()->setLineStyle((QCPGraph::LineStyle)(1));
         if (rand()%100 > 50)
-          this->graph()->setScatterStyle(QCPScatterStyle((QCPScatterStyle::ScatterShape)(2)));
+          this->graph()->setScatterStyle(QCPScatterStyle((QCPScatterStyle::ScatterShape)(5)));
 
         QPen graphPen;
-        graphPen.setColor(QColor(rand()%245+10, rand()%245+10, rand()%245+10));
+        //QColor randColor = QColor(rand()%245+10, rand()%245+10, rand()%245+10);
+        graphPen.setColor(QColor("#3DAEE9"));
         graphPen.setWidthF(2.0);
         this->graph()->setPen(graphPen);
 

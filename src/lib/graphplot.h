@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "QCustomPlot/qcustomplot.h"
 #include <currencyrate.h>
+#include <QSettings>
 
 using namespace core;
 
@@ -24,6 +25,7 @@ private slots:
 private:
     QCPItemTracer *tracer;
     bool graphHasData;
+    QSettings settings;
 };
 
 #endif // GRAPHPLOT_H
