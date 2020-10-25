@@ -9,7 +9,7 @@ GraphPlot::GraphPlot(QWidget *parent) :
     dateTicker->setDateTimeFormat("dd\nMMM\nyyyy");
     this->xAxis->setTicker(dateTicker);
 
-    this->yAxis->setLabel("Rate");
+    this->yAxis->setLabel(tr("Rate"));
 
     this->xAxis->setRange(QCPAxisTickerDateTime::dateTimeToKey(QDate(1999, 1, 1)),
                           QCPAxisTickerDateTime::dateTimeToKey(QDateTime::currentDateTime()));
