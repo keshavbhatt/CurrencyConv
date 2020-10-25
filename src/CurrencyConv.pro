@@ -35,6 +35,7 @@ SOURCES += \
         mainwindow.cpp \
         rategraph.cpp \
         request.cpp \
+        settingswidget.cpp \
         utils.cpp \
         waitingspinnerwidget.cpp
 
@@ -47,13 +48,15 @@ HEADERS += \
         mainwindow.h \
         rategraph.h \
         request.h \
+        settingswidget.h \
         utils.h \
         waitingspinnerwidget.h
 
 FORMS += \
         calenderwidget.ui \
         mainwindow.ui \
-        rategraph.ui
+        rategraph.ui \
+        settingswidget.ui
 
 # Default rules for deployment.
 isEmpty(PREFIX){
