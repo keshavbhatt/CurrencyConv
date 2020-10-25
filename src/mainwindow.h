@@ -21,6 +21,7 @@
 #include "error.h"
 #include "calenderwidget.h"
 #include "rategraph.h"
+#include "settingswidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -75,8 +76,11 @@ private slots:
     void showAbout();
 
     void load_currencies();
+
     int  getIndexByDataRole(QString dataValue, QComboBox *cBox);
+
     void s1ComboFix();
+
     void on_settings_clicked();
 
 private:
@@ -93,6 +97,7 @@ private:
     QUrl _currentUrl,_homeUrl;
 
     RateGraph * _rateGraph=nullptr;
+    SettingsWidget * _settingsWidget = nullptr;
 };
 
 #endif // MAINWINDOW_H

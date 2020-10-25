@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     load_currencies();
 
     getRates(false);
+
 }
 
 void MainWindow::load_currencies()
@@ -286,6 +287,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *ev)
 
 void MainWindow::s1ComboFix()
 {
+    qDebug()<<"called";
     //set width of s1combobox to match that of s2combobox
     int width;
     for (int i = 0; i < ui->buttonsLayout->count(); ++i) {
@@ -440,5 +442,19 @@ void MainWindow::showAbout()
 
 void MainWindow::on_settings_clicked()
 {
-
+    if(_settingsWidget==nullptr){
+        _settingsWidget = new SettingsWidget(this);
+        _settingsWidget->setWindowTitle(QApplication::applicationName()+" | "+tr("Settings"));
+        _settingsWidget->setWindowFlags(Qt::Dialog);
+        _settingsWidget->setWindowModality(Qt::NonModal);
+        connect(_settingsWidget,&SettingsWidget::updateDoubleSpinBox,
+                [=](){
+            ui->s1SpinBox->setDecimals(settings.value("decimalValue",2).toInt());
+            ui->s2SpinBox->setDecimals(settings.value("decimalValue",2).toInt());
+        });
+    }
+    if(!_settingsWidget->isVisible())
+        _settingsWidget->show();
+    else
+        _settingsWidget->raise();
 }
