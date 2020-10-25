@@ -39,6 +39,7 @@ protected slots:
     void closeEvent(QCloseEvent *event);
 
     bool eventFilter(QObject *obj, QEvent *ev);
+    void resizeEvent(QResizeEvent *ev);
 private slots:
 
     void setStyle(QString fname);
@@ -74,7 +75,10 @@ private slots:
     void showAbout();
 
     void load_currencies();
-    int getIndexByDataRole(QString dataValue, QComboBox *cBox);
+    int  getIndexByDataRole(QString dataValue, QComboBox *cBox);
+    void s1ComboFix();
+    void on_settings_clicked();
+
 private:
 
     Ui::MainWindow *ui;

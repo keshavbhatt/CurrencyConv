@@ -235,6 +235,7 @@ void MainWindow::setRates(QString reply)
     foreach(QSizeGrip *wid, ui->statusBar->findChildren<QSizeGrip*>()){
          wid->hide();
     }
+    s1ComboFix();
 }
 
 int MainWindow::getIndexByDataRole(QString dataValue,QComboBox *cBox)
@@ -281,6 +282,25 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *ev)
         return true;
     }
     return QMainWindow::eventFilter(obj,ev);
+}
+
+void MainWindow::s1ComboFix()
+{
+    //set width of s1combobox to match that of s2combobox
+    int width;
+    for (int i = 0; i < ui->buttonsLayout->count(); ++i) {
+        QWidget *wid = ui->buttonsLayout->itemAt(i)->widget();
+        width += wid->width();
+    }
+    int spaces = ui->buttonsLayout->count() * ui->buttonsLayout->spacing();
+    ui->spacerLayout->invalidate();
+    ui->s1comboFix->changeSize(width+spaces,ui->s1comboFix->geometry().height());
+}
+
+void MainWindow::resizeEvent(QResizeEvent *ev)
+{
+    s1ComboFix();
+    QMainWindow::resizeEvent(ev);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -416,4 +436,9 @@ void MainWindow::showAbout()
     a->start(QPropertyAnimation::DeleteWhenStopped);
     message->setText(mes);
     message->show();
+}
+
+void MainWindow::on_settings_clicked()
+{
+
 }
