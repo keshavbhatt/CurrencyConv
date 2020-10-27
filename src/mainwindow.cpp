@@ -270,7 +270,7 @@ void MainWindow::setStyle(QString fname)
         lEd->setRange(0.01,99999999999999.99);
     }
     styleSheet.close();
-    //qApp->setStyle(QStyleFactory::create("Fusion"));
+    qApp->setStyle(QStyleFactory::create("Fusion"));
     QPalette palette;
     palette.setColor(QPalette::Link,QColor("skyblue"));
     qApp->setPalette(palette);
@@ -287,9 +287,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *ev)
 
 void MainWindow::s1ComboFix()
 {
-    qDebug()<<"called";
     //set width of s1combobox to match that of s2combobox
-    int width;
+    int width = 0;
     for (int i = 0; i < ui->buttonsLayout->count(); ++i) {
         QWidget *wid = ui->buttonsLayout->itemAt(i)->widget();
         width += wid->width();
@@ -297,6 +296,7 @@ void MainWindow::s1ComboFix()
     int spaces = ui->buttonsLayout->count() * ui->buttonsLayout->spacing();
     ui->spacerLayout->invalidate();
     ui->s1comboFix->changeSize(width+spaces,ui->s1comboFix->geometry().height());
+    qWarning()<<"called"<<QStyleFactory::keys()<<width+spaces;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *ev)
