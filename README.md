@@ -20,6 +20,13 @@ More features and enhancements soon in near future.
 
 **Story behind this app** : https://twitter.com/imakefoss/status/1318196672279687168
 
+﻿**Stable and nightly Build on any [snapd](https://docs.snapcraft.io/installing-snapd) enabled Linux Distribution can be installed using:**
+
+﻿[![currencyconv](https://snapcraft.io//currencyconv/badge.svg)](https://snapcraft.io/currencyconv) [![currencyconv](https://snapcraft.io//currencyconv/trending.svg?name=0)](https://snapcraft.io/currencyconv)
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/currencyconv)
+
+    snap install color-picker
 
 ## Screenshot
 ![Currency Converter for Linux Desktop](https://github.com/keshavbhatt/CurrencyConv/blob/main/screenshots/1.png?raw=true)
