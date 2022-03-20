@@ -26,7 +26,7 @@ More features and enhancements soon in near future.
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/currencyconv)
 
-    snap install color-picker
+    snap install currencyconv
 
 ## Screenshot
 ![Currency Converter for Linux Desktop](https://github.com/keshavbhatt/CurrencyConv/blob/main/screenshots/1.png?raw=true)
